@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AI助手｜政策咨询</title>
+<title>澄言｜政策咨询</title>
 <style>
   :root{
     --bg:#f7f8fa; --panel:#fff; --text:#202124; --muted:#8b919a;
@@ -22,10 +22,10 @@
   .chat{flex:1;overflow:auto;padding:24px 16px 140px;background:linear-gradient(#fff,#fbfcfe)}
   .row{display:flex;gap:9px;align-items:flex-start;margin-bottom:17px}
   .row.user{justify-content:flex-end}
-  .avatar{width:32px;height:32px;border-radius:50%;background:#eef4ff;border:1px solid #dce8ff;display:flex;align-items:center;justify-content:center;font-weight:700;color:#5d7fc4;flex:0 0 32px}
+  .avatar{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:0 0 34px;overflow:hidden;box-shadow:0 2px 8px rgba(60,75,110,.12);background:#eef2f8}
   .msgwrap{max-width:75%}
-  .bubble{padding:12px 15px;border-radius:17px;background:#fff;border:1px solid #f0f1f3;box-shadow:var(--shadow);font-size:16px;line-height:1.7;white-space:pre-wrap}
-  .user .bubble{background:var(--user);border-color:#dbeafe;box-shadow:none}
+  .bubble{padding:12px 15px;border-radius:17px;background:#fff;border:1px solid #f0f1f3;box-shadow:var(--shadow);font-size:16px;line-height:1.7;white-space:pre-wrap;text-align:justify;text-justify:inter-ideograph}
+  .user .bubble{background:var(--user);border-color:#dbeafe;box-shadow:none;text-align:left}
   .time{font-size:11px;color:#a0a5ad;margin-top:4px}.user .time{text-align:right}
   .quick{margin:0 0 22px 41px;display:flex;flex-wrap:wrap;gap:9px}
   .chip{border:1px solid #dfe3e9;background:var(--chip);padding:10px 15px;border-radius:999px;font-size:14px;cursor:pointer}
@@ -54,7 +54,7 @@
 <div class="app">
   <div class="topbar">
     <button class="back">‹</button>
-    <div class="head"><div class="title">AI助手</div><div class="sub">政策咨询</div></div>
+    <div class="head"><div class="title">澄言</div><div class="sub">智能助手</div></div>
     <div class="tools"><button class="tool" id="meBtn">我的情况</button><button class="tool" id="policyBtn">政策摘要</button></div>
   </div>
   <main class="chat" id="chat"></main>
@@ -66,7 +66,7 @@
   <ul>
     <li>住房情况：我目前在H市无自有住房</li>
     <li>本月工资：5500元</li>
-    <li>其他情况：本月收到1000元一次性医疗困难补助</li>
+    <li>其他情况：本月收到1000元一次性医疗补助</li>
     <li>咨询目标：确认我是否符合H市首次购房补贴申请条件</li>
   </ul>
   <button class="close">关闭</button>
@@ -78,7 +78,7 @@
     <li>申请人在H市无自有住房；</li>
     <li>申请月可计入收入不超过6000元；</li>
     <li>工资和绩效奖金计入可计入收入；</li>
-    <li>一次性医疗困难补助不计入可计入收入。</li>
+    <li>一次性医疗补助不计入可计入收入。</li>
   </ol>
   <button class="close">关闭</button>
 </div></div>
@@ -91,7 +91,13 @@ function esc(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt
 function scroll(){setTimeout(()=>chat.scrollTo({top:chat.scrollHeight,behavior:'smooth'}),30)}
 function add(role,text,typing=false){
   const r=document.createElement('div');r.className='row '+(role==='user'?'user':'assistant');
-  if(role==='assistant'){const a=document.createElement('div');a.className='avatar';a.textContent='✦';r.appendChild(a)}
+  if(role==='assistant'){const a=document.createElement('div');a.className='avatar';a.setAttribute('aria-label','澄言头像');a.innerHTML=`<svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">
+<rect width="64" height="64" rx="18" fill="#E9EEF9"/>
+<circle cx="32" cy="24" r="11" fill="#F3C9A8"/>
+<path d="M22 23c1-9 5-13 11-13 7 0 11 5 11 13-4-2-8-4-12-4-4 0-7 1-10 4z" fill="#3B4050"/>
+<path d="M13 58c2-12 10-19 19-19s17 7 19 19" fill="#6F8FD8"/>
+<path d="M25 39c2 4 5 6 7 6s5-2 7-6" fill="#F3C9A8"/>
+</svg>`;r.appendChild(a)}
   const w=document.createElement('div');w.className='msgwrap';
   const b=document.createElement('div');b.className='bubble';
   if(typing)b.innerHTML='<span class="typing"><i></i><i></i><i></i></span>';
@@ -121,10 +127,10 @@ async function run(){
     await ai('明白了。请问您本月的工资收入是多少？');
     quick(['4500元','5500元','6500元'],'5500元',async()=>{
       await ai('除了工资以外，您本月还有奖金、补助或其他收入吗？');
-      quick(['没有其他收入','有1000元绩效奖金','有1000元一次性医疗困难补助'],'有1000元一次性医疗困难补助',async()=>{
+      quick(['没有其他收入','有1000元绩效奖金','有1000元一次性医疗补助'],'有1000元一次性医疗补助',async()=>{
         await ai('好的，我已经了解您的情况。我正在根据H市首次购房补贴政策进行判断。');
         await analyzing();
-        await ai('根据您提供的信息，您符合申请条件。您本月工资为5500元，未超过6000元收入上限；一次性医疗困难补助不计入可计入收入，住房情况也符合要求。',700);
+        await ai('根据您提供的信息，您符合申请条件。您本月工资为5500元，未超过6000元收入上限；一次性医疗补助不计入可计入收入，住房情况也符合要求。',700);
         const f=document.createElement('div');f.className='finish';f.style.display='block';f.innerHTML='<button>我已阅读AI建议</button>';chat.appendChild(f);scroll();
         f.querySelector('button').onclick=()=>{f.innerHTML='<div style="font-size:14px;color:#59606a;padding:10px 0">咨询已完成，请返回问卷继续作答。</div>';};
       });
